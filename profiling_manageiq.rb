@@ -1,5 +1,9 @@
 require 'open3'
 require_relative 'monitor_system'
+require "csv"
+require "fileutils"
+
+
 
 class ProfileManageIQ
   def initialize
@@ -17,6 +21,11 @@ class ProfileManageIQ
     time_evm_stop = stop_evm
     system_usage = monitor.stop #stop de monitor system usage
 
+    CSV.open("../miq-benchmark/profiling_result.csv", "wb") do |csv|
+      csv << ["time_evm_start", "time_evm_stop", "time_refresh_first", "time_refresh_all", "memory_usage", "cpu_usage", "disk_usage"]
+      csv << [time_evm_start, time_evm_stop, time_refresh_first, time_refresh_all, system_usage[:mem], system_usage[:cpu], system_usage[:disk]]
+    end
+    puts "Result wrote in this file: profiling_result.csv"
     puts "Time EVM Start: #{time_evm_start}", "Time EVM Stop: #{time_evm_stop}",
          "Time Refresh one provider: #{time_refresh_first}", "Time Refresh all providers: #{time_refresh_all}",
          "System Usage: #{system_usage}"
