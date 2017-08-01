@@ -63,7 +63,13 @@ class ProfileManageIQ
 
   def refresh(elem)
     start_time = Time.now
-    out, st = Open3.capture2("bundle exec rails runner 'EmsRefresh.refresh ExtManagementSystem.#{elem}'")
+
+    if elem == 'all'
+      out, st = Open3.capture2("bundle exec rails runner 'ExtManagementSystem.all.collect {|provider| EmsRefresh.refresh provider }'")
+    else
+      out, st = Open3.capture2("bundle exec rails runner 'EmsRefresh.refresh ExtManagementSystem.#{elem}'")
+    end
+
     end_time = Time.now
     diff = end_time - start_time
 
