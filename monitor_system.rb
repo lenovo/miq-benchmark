@@ -19,17 +19,22 @@ class MonitorSystem
                         mems = []
                         cpus = []
                         disks = []
-
                         loop do
-                          mem, st = Open3.capture2("free -m | awk 'NR==2{printf $3*100/$2}'")
-                          cpu, st = Open3.capture2("top -bn1 | grep load | awk '{printf $(NF-2)}'| sed s/.$//")
-                          disk, st = Open3.capture2("df -h | awk '$NF==\"/\"{printf \"%.3f\", $5}'| sed s/.$//")
+                          begin
+                            mem, st = Open3.capture2("free -m | awk 'NR==2{printf \"%.3f\", ($3*100)/$2}'")
+                            cpu, st1 = Open3.capture2("top -bn1 | grep load | awk '{printf $(NF-2)}'| sed s/.$//")
+                            disk, st2 = Open3.capture2("df -h | awk '$NF==\"/\"{printf \"%.3f\", $5}'| sed s/.$//")
 
-                          disks.push(disk)
-                          mems.push(mem)
-                          cpus.push(cpu)
-                          break if @exit
-                          sleep 1
+                            mems.push(mem) unless st==1
+                            cpus.push(cpu) unless st1==1
+                            disks.push(disk) unless st2==1
+
+                            break if @exit
+                            sleep 1
+                          rescue => err
+                            puts "Miq-Error: #{err}"
+                            sleep 1
+                          end
                         end
 
                         result = {"mem":mems, "cpu":cpus, "disk":disks}
