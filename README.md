@@ -13,7 +13,7 @@ After, go to manageiq project and run the following command:
 
 ```sh
   # ~/workspace/manageIQ
-  ruby ../miq-benchmark/profiling_manageiq.rb 
+  ruby ../miq-benchmark/miq-benchmark.rb 
 ```
 
 The standard output is:

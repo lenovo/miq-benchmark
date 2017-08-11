@@ -1,13 +1,13 @@
 require 'open3'
 require_relative 'monitor_system'
-require "csv"
-require "fileutils"
-
-
+require 'csv'
 
 class ProfileManageIQ
-  def initialize
+  def start
+    puts "Logging in the VPN...\n"
+    system("sudo openconnect -b --script=~/vpn.sh webvpn.us.lenovo.com")
     main
+    clean_enviroment
   end
 
   def main
@@ -80,5 +80,9 @@ class ProfileManageIQ
     end
     diff
   end
+
+  def clean_enviroment
+    system("miq-docker recreate")
+    system("sudo reboot")
+  end
 end
-ProfileManageIQ.new
